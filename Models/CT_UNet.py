@@ -112,9 +112,9 @@ class CT_UNet(nn.Module):
     x = nn.Upsample2d(2)(z)
     x = self.up1(torch.cat([x,res4]), dim=1)
     x = nn.Upsample2d(2)(x)
-    x = self.up1(torch.cat([x,res3]), dim=1)    
+    x = self.up2(torch.cat([x,res3]), dim=1)    
     x = nn.Upsample2d(2)(x)
-    x = self.up1(torch.cat([x,res2]), dim=1)    
+    x = self.up3(torch.cat([x,res2]), dim=1)    
     x = nn.Upsample2d(2)(x)
-    x = self.up1(torch.cat([x,res1]), dim=1)
+    x = self.up4(torch.cat([x,res1]), dim=1)
     return x 
