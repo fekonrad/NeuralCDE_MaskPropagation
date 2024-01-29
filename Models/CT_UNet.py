@@ -79,14 +79,14 @@ class CT_UNet(nn.Module):
         z0 = self.mask_encoder(y0)
 
         x = x.view(-1, c, h, w)  # reshape tensor to make it compatible with Conv2d layers
-        res1 = self.down1(x)  # (64, 256, 256)
-        x = nn.MaxPool2d(2)(res1)  # (64, 128, 128)
-        res2 = self.down2(x)  # (128, 128, 128)
-        x = nn.MaxPool2d(2)(res2)  # (128, 64, 64)
-        res3 = self.down3(x)  # (256, 64, 64)
-        x = nn.MaxPool2d(2)(res3)  # (256, 32, 32)
-        res4 = self.down4(x)  # (512, 32, 32)
-        x = nn.MaxPool2d(2)(res4)  # (512, 16, 16)
+        res1 = self.down1(x)  
+        x = nn.MaxPool2d(2)(res1)  
+        res2 = self.down2(x)  
+        x = nn.MaxPool2d(2)(res2) 
+        res3 = self.down3(x)  
+        x = nn.MaxPool2d(2)(res3)  
+        res4 = self.down4(x)  
+        x = nn.MaxPool2d(2)(res4)  
 
         # Step 2: Compute Spline and Solve CDE in the Latent Space at specified time points
         _, latent_c, latent_h, latent_w = x.shape
@@ -99,12 +99,12 @@ class CT_UNet(nn.Module):
             z[index] = cde_solve(spline, self.cde_func, z0[index], t)
 
         # Step 3: Decode CDE Solution back into the ambient space, add residuals
-        x = z.view(-1, latent_c, latent_h, latent_w)  # need to reshape again for Conv2d  -> (512, 16, 16)
+        x = z.view(-1, latent_c, latent_h, latent_w)  # need to reshape again for Conv2d
 
-        x = nn.Upsample(scale_factor=2)(x)  # (512, 32, 32)
-        x = self.up1(torch.cat([x, res4], dim=1))  # (1024, 32, 32) --> (512, 32, 32)
-        x = self.conv_trans1(x)  # (256, 64, 64)
-        x = self.up2(torch.cat([x, res3], dim=1))  # (256, 128, 128)
+        x = nn.Upsample(scale_factor=2)(x) 
+        x = self.up1(torch.cat([x, res4], dim=1))  
+        x = self.conv_trans1(x)  
+        x = self.up2(torch.cat([x, res3], dim=1)) 
         x = self.conv_trans2(x)
         x = self.up3(torch.cat([x, res2], dim=1))
         x = self.conv_trans3(x)
