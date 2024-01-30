@@ -4,7 +4,13 @@ The goal of this repository is to implement the model presented in ["Exploiting 
 Note that there already is a repository for this paper [here](https://github.com/normal-computing/ct-video-modeling/tree/main). 
 
 # How to use 
-The class `CT_UNet` implements the "continuous-time U-Net" as described in Section 3 of the paper. It creates a `nn.Module` whose `forward()`-method takes the following arguments: 
+The class `CT_UNet` implements the "continuous-time U-Net" as described in Section 3 of the paper. It creates an `nn.Module` whose initialization takes the following (optional) arguments: 
+- `hidden_channels` : Specifies the amount of hidden channels in the first convolutional block, doubling in each convolutional block
+- `atol` : Absolute tolerance for numerical integrator `odeint` 
+- `rtol` : Relative tolerance for numerical integrator `odeint`
+- `method` : String specifying the method of numerical integration used in `odeint`. See the [implementation](https://github.com/rtqichen/torchdiffeq/blob/master/torchdiffeq/_impl/odeint.py) for available methods
+
+It's `forward()`-method takes the following arguments: 
 - `x` : Tensor of shape (batch_size, frames, channels, height, width)
 - `times` : 1-D Tensor with increasing entries representing the time points for which the mask is computed
 - `y0` : Tensor of shape (height, width) representing the initial mask at time `t0`
